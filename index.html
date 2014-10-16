@@ -1,0 +1,122 @@
+<html>
+<head>
+    <title>Self Avoiding Walk</title>
+    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>-->
+</head>
+<body>
+    Grid Size: <input id="txtGridSize" type="text" value="5" />
+    <input id="btnRun" type="button" value="Run" />
+    <br />
+    Number of Paths: <span id="result"></span>
+	Duration: <span id="duration"></span>
+	
+	<div id="error" style="color:red;"></div>
+
+	<script id="worker1" type="javascript/worker">
+		self.onmessage = function(e) {
+			importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js');
+			
+			var timeStart = new Date();
+			
+			var data = e.data;
+			if (data.gridSize) {
+				gridSize = data.gridSize;
+			}
+			numPaths = 0;
+			move(new Point(0, 0), []);
+			
+			var timeEnd = new Date();
+			var diff = timeEnd - timeStart;
+		
+			console.log("time duration in milliseconds: " + diff);
+
+			var duration = "";
+			var diffHours = Math.floor(diff / 1000 / 60 / 60);
+			diff -= diffHours * 1000 * 60 * 60;
+
+			var diffMinutes = Math.floor(diff / 1000 / 60);
+			diff -= diffMinutes * 1000 * 60;
+
+			var diffSeconds = Math.floor(diff / 1000);
+			var diffMilliseconds = diff % 1000;
+			  
+			if (diffHours > 0) {
+				duration += diffHours;
+				duration += diffHours == 1 ? " hour " : " hours ";
+			}
+			if (diffMinutes > 0) {
+				duration += diffMinutes;
+				duration += diffMinutes == 1 ? " minute " : " minutes ";
+			}
+			if (diffSeconds > 0) {
+				duration += diffSeconds;
+				duration += diffSeconds == 1 ? " second " : " seconds ";
+			}
+			if (diffMilliseconds > 0) {
+				duration += diffMilliseconds;
+				duration += diffMilliseconds == 1 ? " millisecond " : " milliseconds ";
+			}
+				
+			self.postMessage({ numPaths: numPaths, duration: duration });
+		};
+		
+		var numPaths = 0;
+        var gridSize = 5;
+
+        var Point = function (x, y) {
+            this.x = x;
+            this.y = y;
+        }
+		
+		function isValidPoint(point, path) {
+
+            if (point.x < 0 || point.x >= gridSize || point.y < 0 || point.y >= gridSize) {
+                return false;
+            }
+
+            return _.filter(path, _.matches({ x: point.x, y: point.y })).length == 0;
+        }
+
+        function move(point, path) {
+            if (isValidPoint(point, path)) {
+                if (point.x == gridSize - 1 && point.y == gridSize - 1) {
+                    numPaths++;
+                }
+                else {
+                    path.push(point);
+
+                    move(new Point((point.x - 1), point.y), _.clone(path));
+                    move(new Point((point.x + 1), point.y), _.clone(path));
+                    move(new Point(point.x, point.y - 1), _.clone(path));
+                    move(new Point(point.x, point.y + 1), _.clone(path));
+                }
+            }
+        }
+	</script>
+	
+    <script>
+        window.onload = function () {
+		
+            document.getElementById("btnRun").onclick = function () {
+				
+				var blob = new Blob([document.querySelector('#worker1').textContent]);
+
+				var worker = new Worker(window.URL.createObjectURL(blob));
+				worker.onmessage = function(e) {
+					var data = e.data;
+					document.getElementById("result").innerHTML = data.numPaths;
+					document.getElementById("duration").innerHTML = data.duration;
+				};
+				worker.onerror = function(e) {
+					document.getElementById('error').textContent = [
+				  'ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message
+				].join('');
+				};
+
+				worker.postMessage({gridSize: document.getElementById("txtGridSize").value}); // Start the worker
+            }		
+        }	
+
+    </script>
+</body>
+</html>
