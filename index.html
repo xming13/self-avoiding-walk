@@ -54,6 +54,9 @@
         a:focus {
             color: #98FFEF;
         }
+        blockquote footer {
+            color: #D6D6D6;
+        }
         .container {
             margin: 0 auto;
         }
@@ -171,9 +174,19 @@
         </nav>
     </header>
 
-    <p class="lead">A self-avoiding walk is a path from one point to another which never intersects itself.
-        <br> Self-avoiding rook walks are walks on an m×n grid which start from (0,0), end at (m,n), and are composed of only horizontal and vertical steps.
-    </p>
+    <blockquote>
+        <p>
+            A self-avoiding walk is a path from one point to another which never intersects itself.
+        </p>
+        <p>
+            Self-avoiding rook walks are walks on an m×n grid which start from (0,0), end at (m,n), and are composed of only horizontal and vertical steps.
+        </p>
+        <footer>
+            <a href="http://mathworld.wolfram.com/Self-AvoidingWalk.html" target="_blank">
+                http://mathworld.wolfram.com/Self-AvoidingWalk.html
+            </a>
+        </footer>
+    </blockquote>
     <p>
         <em>I came across this problem when I was implementing the game:
             <a href="http://xming13.github.io/squirrel-and-acorn/" target="_blank">squirrel and acorn</a>
@@ -341,7 +354,7 @@
                     break;
                 case "8":
                     $("#progress-bar").addClass("progress-bar-danger");
-                    $("#estimate").html("This will take around forever? I really have no idea...");
+                    $("#estimate").html("This will take forever? I really have no idea...");
                     $("#progress, #btn-stop").show();
                 default:
                     break;
