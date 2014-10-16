@@ -13,6 +13,7 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" />
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -21,13 +22,30 @@
     <![endif]-->
 
     <style>
+        *, *:after, *:before {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        /* Clearfix hack by Nicolas Gallagher: http://nicolasgallagher.com/micro-clearfix-hack/ */
+        .clearfix:before,
+        .clearfix:after {
+            content: " ";
+            display: table;
+        }
+
+        .clearfix:after {
+            clear: both;
+        }
+
         html,
         body {
             background: #005D61;
             color: #fff;
         }
         body {
-            padding-top: 20px;
+            padding-top: 60px;
         }
         a {
             color: #42C5CA;
@@ -38,6 +56,79 @@
         }
         .container {
             margin: 0 auto;
+        }
+        #container>header {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        #container>header h1 {
+            margin-top: 0;
+            float: left;
+        }
+        #container>header nav {
+            float: right;
+        }
+        #container>header nav a {
+            display: block;
+            float: left;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            color: transparent;
+            margin: 0 2px;
+            border: 4px solid #0f0;
+        }
+        #container > header nav a:after {
+            content: attr(data-info);
+            color: #fff;
+            position: absolute;
+            width: 600%;
+            top: 120%;
+            text-align: right;
+            right: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #container > header nav a:hover:after {
+            opacity: 1;
+        }
+
+        #container > header nav a:hover {
+            background: #009400;
+        }
+
+        #container > header nav a:hover:before {
+            color: #fff;
+        }
+
+        .icon-home:before,
+        .icon-github:before {
+            font-family: 'fontawesome';
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            speak: none;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 2.3;
+            text-align: center;
+            color: #009400;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .icon-home:before {
+            content: "\f015";
+        }
+
+        .icon-github:before {
+            content: "\f113";
         }
         .input-medium {
             width: 150px;
@@ -54,57 +145,76 @@
             }
         }
     </style>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-53662868-9', 'auto');
+        ga('send', 'pageview');
+
+    </script>
 </head>
 
 <body>
 <div id="container" class="container">
-    <div class="main">
+    <header class="clearfix">
         <h1>Self-avoiding Walk</h1>
-        <p class="lead">A self-avoiding walk is a path from one point to another which never intersects itself.
-            <br> Self-avoiding rook walks are walks on an m×n grid which start from (0,0), end at (m,n), and are composed of only horizontal and vertical steps.
-        </p>
-        <p>
-            <em>I came across this problem when I was implementing the game:
-                <a href="http://xming13.github.io/squirrel-and-acorn" target="_blank">squirrel and acorn</a>
-                and was wondering how many different paths are there for the squirrel to move from the top left
-                to the bottom right without revisiting the same square twice.</em>
-        </p>
+        <nav>
+            <a href="https://xming13.github.io/self-avoiding-walk/" class="icon-home" data-info="Home">
+                Home
+            </a>
+            <a href="https://github.com/xming13/self-avoiding-walk/" target="_blank" class="icon-github" data-info="Github">
+                Github
+            </a>
+        </nav>
+    </header>
 
-        <div class="media">
-            <div class="pull-left">
-                <img class="media-object" src="images/self_avoiding_walk.png" alt="self-avoiding walk" width="150" height="150" />
-            </div>
-            <div class="media-body form-group">
-                <label for="select-grid-size">Grid Size</label>
-                <select class="form-control input-medium" id="select-grid-size">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                </select>
-            </div>
-            <button id="btn-go" type="submit" class="btn btn-primary">Go!</button>
-            <button id="btn-stop" type="button" class="btn btn-danger">Stop</button>
+    <p class="lead">A self-avoiding walk is a path from one point to another which never intersects itself.
+        <br> Self-avoiding rook walks are walks on an m×n grid which start from (0,0), end at (m,n), and are composed of only horizontal and vertical steps.
+    </p>
+    <p>
+        <em>I came across this problem when I was implementing the game:
+            <a href="http://xming13.github.io/squirrel-and-acorn/" target="_blank">squirrel and acorn</a>
+            and was wondering how many different paths are there for the squirrel to move from the top left
+            to the bottom right without revisiting the same square twice.</em>
+    </p>
+
+    <div class="media">
+        <div class="pull-left">
+            <img class="media-object" src="images/self_avoiding_walk.png" alt="self-avoiding walk" width="150" height="150" />
         </div>
-
-        <br>
-
-        <div id="progress" class="progress">
-            <div id="progress-bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                <span id="estimate"></span>
-            </div>
+        <div class="media-body form-group">
+            <label for="select-grid-size">Grid Size</label>
+            <select class="form-control input-medium" id="select-grid-size">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+            </select>
         </div>
-
-        <div id="success" class="alert alert-success" role="alert">
-            <span id="result"></span>
-            <span id="duration"></span>
-        </div>
-        <div id="error" class="alert alert-danger" role="alert"></div>
+        <button id="btn-go" type="submit" class="btn btn-primary">Go!</button>
+        <button id="btn-stop" type="button" class="btn btn-danger">Stop</button>
     </div>
+
+    <br>
+
+    <div id="progress" class="progress">
+        <div id="progress-bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+            <span id="estimate"></span>
+        </div>
+    </div>
+
+    <div id="success" class="alert alert-success" role="alert">
+        <span id="result"></span>
+        <span id="duration"></span>
+    </div>
+    <div id="error" class="alert alert-danger" role="alert"></div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
