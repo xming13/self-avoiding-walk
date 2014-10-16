@@ -324,8 +324,11 @@
             worker.onmessage = function(e) {
                 var data = e.data;
 
-                $("#success").html("There are <b>" + data.numPaths + "</b> different paths to move from top left to bottom right in a <b>" + selectedGridSize + "x" + selectedGridSize + "</b> grid without revisitng any square twice. " + "<br><br>Time taken to calculate this: <b>" + data.duration + "</b>").show();
-
+                $("#success").html("There are <b>" + data.numPaths + "</b> " +
+                        "different paths to move from top left to bottom right in a " +
+                        "<b>" + selectedGridSize + "x" + selectedGridSize + "</b> grid without revisitng any square twice. "
+                        + "<br><br>Time taken to calculate this: <b>" + data.duration + "</b>")
+                        .show()[0].scrollIntoView();
                 $btn.button('reset');
                 $("#progress").hide();
             };
