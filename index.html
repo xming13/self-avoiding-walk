@@ -1,122 +1,251 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <title>Self Avoiding Walk</title>
-    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="self-avoiding walk">
+    <meta name="author" content="xming13">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Self-avoiding Walk</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        html,
+        body {
+            background: #005D61;
+            color: #fff;
+        }
+        body {
+            padding-top: 20px;
+        }
+        a {
+            color: #42C5CA;
+        }
+        a:hover,
+        a:focus {
+            color: #98FFEF;
+        }
+        .container {
+            margin: 0 auto;
+        }
+        .input-medium {
+            width: 150px;
+        }
+        #success,
+        #error,
+        #progress,
+        #btn-stop {
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 730px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    Grid Size: <input id="txtGridSize" type="text" value="5" />
-    <input id="btnRun" type="button" value="Run" />
-    <br />
-    Number of Paths: <span id="result"></span>
-	Duration: <span id="duration"></span>
-	
-	<div id="error" style="color:red;"></div>
+<div id="container" class="container">
+    <div class="main">
+        <h1>Self-avoiding Walk</h1>
+        <p class="lead">A self-avoiding walk is a path from one point to another which never intersects itself.
+            <br> Self-avoiding rook walks are walks on an m×n grid which start from (0,0), end at (m,n), and are composed of only horizontal and vertical steps.
+        </p>
+        <p>
+            <em>I came across this problem when I was implementing the game:
+                <a href="http://xming13.github.io/squirrel-and-acorn" target="_blank">squirrel and acorn</a>
+                and was wondering how many different paths are there for the squirrel to move from the top left
+                to the bottom right without revisiting the same square twice.</em>
+        </p>
 
-	<script id="worker1" type="javascript/worker">
-		self.onmessage = function(e) {
-			importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js');
-			
-			var timeStart = new Date();
-			
-			var data = e.data;
-			if (data.gridSize) {
-				gridSize = data.gridSize;
-			}
-			numPaths = 0;
-			move(new Point(0, 0), []);
-			
-			var timeEnd = new Date();
-			var diff = timeEnd - timeStart;
-		
-			console.log("time duration in milliseconds: " + diff);
+        <div class="media">
+            <div class="pull-left">
+                <img class="media-object" src="images/self_avoiding_walk.png" alt="self-avoiding walk" width="150" height="150" />
+            </div>
+            <div class="media-body form-group">
+                <label for="select-grid-size">Grid Size</label>
+                <select class="form-control input-medium" id="select-grid-size">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                </select>
+            </div>
+            <button id="btn-go" type="submit" class="btn btn-primary">Go!</button>
+            <button id="btn-stop" type="button" class="btn btn-danger">Stop</button>
+        </div>
 
-			var duration = "";
-			var diffHours = Math.floor(diff / 1000 / 60 / 60);
-			diff -= diffHours * 1000 * 60 * 60;
+        <br>
 
-			var diffMinutes = Math.floor(diff / 1000 / 60);
-			diff -= diffMinutes * 1000 * 60;
+        <div id="progress" class="progress">
+            <div id="progress-bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                <span id="estimate"></span>
+            </div>
+        </div>
 
-			var diffSeconds = Math.floor(diff / 1000);
-			var diffMilliseconds = diff % 1000;
-			  
-			if (diffHours > 0) {
-				duration += diffHours;
-				duration += diffHours == 1 ? " hour " : " hours ";
-			}
-			if (diffMinutes > 0) {
-				duration += diffMinutes;
-				duration += diffMinutes == 1 ? " minute " : " minutes ";
-			}
-			if (diffSeconds > 0) {
-				duration += diffSeconds;
-				duration += diffSeconds == 1 ? " second " : " seconds ";
-			}
-			if (diffMilliseconds > 0) {
-				duration += diffMilliseconds;
-				duration += diffMilliseconds == 1 ? " millisecond " : " milliseconds ";
-			}
-				
-			self.postMessage({ numPaths: numPaths, duration: duration });
-		};
-		
-		var numPaths = 0;
-        var gridSize = 5;
+        <div id="success" class="alert alert-success" role="alert">
+            <span id="result"></span>
+            <span id="duration"></span>
+        </div>
+        <div id="error" class="alert alert-danger" role="alert"></div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-        var Point = function (x, y) {
-            this.x = x;
-            this.y = y;
-        }
-		
-		function isValidPoint(point, path) {
+<script id="worker1" type="javascript/worker">
+   var numPaths = 0;
+   var gridSize = 5;
+   var Point = function(x, y) {
+       this.x = x;
+       this.y = y;
+   }
 
-            if (point.x < 0 || point.x >= gridSize || point.y < 0 || point.y >= gridSize) {
-                return false;
+   self.onmessage = function(e) {
+       importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js');
+       var timeStart = new Date();
+       var data = e.data;
+       if (data.gridSize) {
+           gridSize = data.gridSize;
+       }
+       numPaths = 0;
+       move(new Point(0, 0), []);
+       var timeEnd = new Date();
+       var diff = timeEnd - timeStart;
+       console.log("time duration in milliseconds: " + diff);
+       var duration = "";
+       var diffHours = Math.floor(diff / 1000 / 60 / 60);
+       diff -= diffHours * 1000 * 60 * 60;
+       var diffMinutes = Math.floor(diff / 1000 / 60);
+       diff -= diffMinutes * 1000 * 60;
+       var diffSeconds = Math.floor(diff / 1000);
+       var diffMilliseconds = diff % 1000;
+       if (diffHours > 0) {
+           duration += diffHours;
+           duration += diffHours == 1 ? " hour " : " hours ";
+       }
+       if (diffMinutes > 0) {
+           duration += diffMinutes;
+           duration += diffMinutes == 1 ? " minute " : " minutes ";
+       }
+       if (diffSeconds > 0) {
+           duration += diffSeconds;
+           duration += diffSeconds == 1 ? " second " : " seconds ";
+       }
+       if (diffMilliseconds > 0) {
+           duration += diffMilliseconds;
+           duration += diffMilliseconds == 1 ? " millisecond " : " milliseconds ";
+       }
+       self.postMessage({
+           numPaths: numPaths,
+           duration: duration
+       });
+   };
+
+   function isValidPoint(point, path) {
+       if (point.x < 0 || point.x >= gridSize || point.y < 0 || point.y >= gridSize) {
+           return false;
+       }
+       return _.filter(path, _.matches({
+           x: point.x,
+           y: point.y
+       })).length == 0;
+   }
+
+   function move(point, path) {
+       if (isValidPoint(point, path)) {
+           if (point.x == gridSize - 1 && point.y == gridSize - 1) {
+               numPaths++;
+           } else {
+               path.push(point);
+               move(new Point((point.x - 1), point.y), _.clone(path));
+               move(new Point((point.x + 1), point.y), _.clone(path));
+               move(new Point(point.x, point.y - 1), _.clone(path));
+               move(new Point(point.x, point.y + 1), _.clone(path));
+           }
+       }
+   }
+</script>
+
+<script>
+    $(document).ready(function() {
+        $("#btn-go").click(function() {
+
+            var $btn = $(this);
+            $btn.button('loading');
+
+            $("#success, #error, #progress, #btn-stop").hide();
+            $("#progress-bar").removeClass("progress-bar-warning progress-bar-danger");
+
+            var selectedGridSize = $("#select-grid-size").val();
+
+            var blob = new Blob([document.querySelector('#worker1').textContent]);
+
+            var worker = new Worker(window.URL.createObjectURL(blob));
+            worker.onmessage = function(e) {
+                var data = e.data;
+
+                $("#success").html("There are <b>" + data.numPaths + "</b> different paths to move from top left to bottom right in a <b>" + selectedGridSize + "x" + selectedGridSize + "</b> grid without revisitng any square twice. " + "<br><br>Time taken to calculate this: <b>" + data.duration + "</b>").show();
+
+                $btn.button('reset');
+                $("#progress").hide();
+            };
+            worker.onerror = function(e) {
+                $("#error").html([
+                    'ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message
+                ].join('')).show();
+
+                $btn.button('reset');
+                $("#progress").hide();
+            };
+
+            worker.postMessage({
+                gridSize: selectedGridSize
+            }); // Start the worker
+
+            switch (selectedGridSize) {
+                case "6":
+                    $("#estimate").html("This will take around 5 minutes");
+                    $("#progress, #btn-stop").show();
+                    break;
+                case "7":
+                    $("#progress-bar").addClass("progress-bar-warning");
+                    $("#estimate").html("This will take around 2 hours?");
+                    $("#progress, #btn-stop").show();
+                    break;
+                case "8":
+                    $("#progress-bar").addClass("progress-bar-danger");
+                    $("#estimate").html("This will take around forever? I really have no idea...");
+                    $("#progress, #btn-stop").show();
+                default:
+                    break;
             }
 
-            return _.filter(path, _.matches({ x: point.x, y: point.y })).length == 0;
-        }
+            $("#btn-stop").click(function() {
+                worker.terminate();
+                $btn.button('reset');
+                $("#progress, #btn-stop").hide();
+            });
+        });
+    });
+</script>
 
-        function move(point, path) {
-            if (isValidPoint(point, path)) {
-                if (point.x == gridSize - 1 && point.y == gridSize - 1) {
-                    numPaths++;
-                }
-                else {
-                    path.push(point);
-
-                    move(new Point((point.x - 1), point.y), _.clone(path));
-                    move(new Point((point.x + 1), point.y), _.clone(path));
-                    move(new Point(point.x, point.y - 1), _.clone(path));
-                    move(new Point(point.x, point.y + 1), _.clone(path));
-                }
-            }
-        }
-	</script>
-	
-    <script>
-        window.onload = function () {
-		
-            document.getElementById("btnRun").onclick = function () {
-				
-				var blob = new Blob([document.querySelector('#worker1').textContent]);
-
-				var worker = new Worker(window.URL.createObjectURL(blob));
-				worker.onmessage = function(e) {
-					var data = e.data;
-					document.getElementById("result").innerHTML = data.numPaths;
-					document.getElementById("duration").innerHTML = data.duration;
-				};
-				worker.onerror = function(e) {
-					document.getElementById('error').textContent = [
-				  'ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message
-				].join('');
-				};
-
-				worker.postMessage({gridSize: document.getElementById("txtGridSize").value}); // Start the worker
-            }		
-        }	
-
-    </script>
 </body>
+
 </html>
