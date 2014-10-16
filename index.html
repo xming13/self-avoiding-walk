@@ -328,9 +328,14 @@
                         "different paths to move from top left to bottom right in a " +
                         "<b>" + selectedGridSize + "x" + selectedGridSize + "</b> grid without revisitng any square twice. "
                         + "<br><br>Time taken to calculate this: <b>" + data.duration + "</b>")
-                        .show()[0].scrollIntoView();
+                        .show();
+
                 $btn.button('reset');
                 $("#progress").hide();
+
+                $('html, body').animate({
+                    scrollTop: $("#success").offset().top
+                });
             };
             worker.onerror = function(e) {
                 $("#error").html([
@@ -349,16 +354,25 @@
                 case "6":
                     $("#estimate").html("This will take around 5 minutes");
                     $("#progress, #btn-stop").show();
+                    $('html, body').animate({
+                        scrollTop: $("#progress").offset().top
+                    });
                     break;
                 case "7":
                     $("#progress-bar").addClass("progress-bar-warning");
                     $("#estimate").html("This will take around 2 hours?");
                     $("#progress, #btn-stop").show();
+                    $('html, body').animate({
+                        scrollTop: $("#progress").offset().top
+                    });
                     break;
                 case "8":
                     $("#progress-bar").addClass("progress-bar-danger");
                     $("#estimate").html("This will take forever? I really have no idea...");
                     $("#progress, #btn-stop").show();
+                    $('html, body').animate({
+                        scrollTop: $("#progress").offset().top
+                    });
                 default:
                     break;
             }
