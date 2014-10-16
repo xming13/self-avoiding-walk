@@ -347,6 +347,10 @@
 
                 $btn.button('reset');
                 $("#progress").hide();
+
+                $('html, body').animate({
+                    scrollTop: $("#error").offset().top
+                });
             };
 
             worker.postMessage({
