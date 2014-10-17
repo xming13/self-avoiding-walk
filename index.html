@@ -179,7 +179,7 @@
 
     <blockquote>
         <p>
-            A self-avoiding walk is a path from one point to another which never intersects itself.
+            A <a href="http://en.wikipedia.org/wiki/Self-avoiding_walk" target="_blank">self-avoiding walk</a> is a path from one point to another which never intersects itself.
         </p>
         <p>
             Self-avoiding rook walks are walks on an m×n grid which start from (0,0), end at (m,n), and are composed of only horizontal and vertical steps.
@@ -255,6 +255,15 @@
        var timeEnd = new Date();
        var diff = timeEnd - timeStart;
        console.log("time duration in milliseconds: " + diff);
+       var duration = getReadableDuration(diff);
+
+       self.postMessage({
+           numPaths: numPaths,
+           duration: duration
+       });
+   };
+
+   function getReadableDuration(diff) {
        var duration = "";
        var diffHours = Math.floor(diff / 1000 / 60 / 60);
        diff -= diffHours * 1000 * 60 * 60;
@@ -278,11 +287,9 @@
            duration += diffMilliseconds;
            duration += diffMilliseconds == 1 ? " millisecond " : " milliseconds ";
        }
-       self.postMessage({
-           numPaths: numPaths,
-           duration: duration
-       });
-   };
+
+       return duration;
+   }
 
    function isValidPoint(point, path) {
        if (point.x < 0 || point.x >= gridSize || point.y < 0 || point.y >= gridSize) {
@@ -367,7 +374,7 @@
                     break;
                 case "7":
                     $("#progress-bar").addClass("progress-bar-warning");
-                    $("#estimate").html("This will take around 2 hours?");
+                    $("#estimate").html("This will take at least 2 hours?");
                     $("#progress, #btn-stop").show();
                     $('html, body').animate({
                         scrollTop: $("#progress").offset().top
