@@ -6,7 +6,7 @@ var Point = function(x, y) {
 }
 
 self.onmessage = function(e) {
-    importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js');
+    importScripts('//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js');
     var timeStart = new Date();
     var data = e.data;
     if (data.gridSize) {
